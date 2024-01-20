@@ -4,47 +4,50 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
+	"github.com/katpap17/companyapp/repository"
+	"github.com/katpap17/companyapp/utils"
 )
-
-type Company struct {
-	ID          uuid.UUID `json:id,omitempty`
-	Name        string
-	Description string
-	Employees   int
-	Registered  bool
-	Type        companyType
-}
-
-func mockCompany() (Company, error) {
-	return Company{ID: uuid.Nil, Name: "XM"}, nil
-}
 
 func GetCompany(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len(PARSE_URL):]
-	company, err := mockCompany()
+	parsedID, err := uuid.FromString(id)
+	if err != nil {
+		utils.Logger.Error(parsedID)
+		handleErrorResponse(w, FAILED_GET, http.StatusBadRequest)
+		return
+	}
+	utils.Logger.Debug("fetching company with id: ", parsedID)
+	company, err := repository.GetCompany(parsedID)
 	if err != nil {
 		handleErrorResponse(w, FAILED_GET, http.StatusInternalServerError)
 		return
 	}
-	if company == (Company{}) {
+	if company == nil {
 		handleErrorResponse(w, FAILED_GET, http.StatusNotFound)
 		return
 	}
-	company.Description = id
 	res := map[string]interface{}{COMPANY: company}
 	handleSuccessFullResponse(w, res)
 }
 
 func CreateCompany(w http.ResponseWriter, r *http.Request) {
-	var company Company
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&company)
+	var company repository.Company
+	err := json.NewDecoder(r.Body).Decode(&company)
 	if err != nil {
+		utils.Logger.Error(err)
 		handleErrorResponse(w, FAILED_CREATE, http.StatusBadRequest)
 		return
 	}
-	_, err = mockCompany()
+	utils.Logger.Debug("Validating company: ", company)
+	validated := validateCompany(company)
+	if !validated {
+		utils.Logger.Info("Company not validated successfully")
+		handleErrorResponse(w, FAILED_CREATE, http.StatusBadRequest)
+		return
+	}
+	utils.Logger.Debug("Creating company: ", company)
+	err = repository.CreateCompany(&company)
 	if err != nil {
 		handleErrorResponse(w, FAILED_CREATE, http.StatusInternalServerError)
 		return
@@ -53,7 +56,7 @@ func CreateCompany(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateCompany(w http.ResponseWriter, r *http.Request) {
-	var company Company
+	var company repository.Company
 	if r.Body == nil {
 		handleErrorResponse(w, FAILED_UPDATE, http.StatusBadRequest)
 	}
@@ -63,7 +66,15 @@ func UpdateCompany(w http.ResponseWriter, r *http.Request) {
 		handleErrorResponse(w, FAILED_UPDATE, http.StatusBadRequest)
 		return
 	}
-	_, err = mockCompany()
+	utils.Logger.Debug("Validating company: ", company)
+	validated := validateCompany(company)
+	if !validated {
+		utils.Logger.Info("Company not validated successfully")
+		handleErrorResponse(w, FAILED_CREATE, http.StatusBadRequest)
+		return
+	}
+	utils.Logger.Debug("Updating company: ", company)
+	err = repository.UpdateCompany(&company)
 	if err != nil {
 		handleErrorResponse(w, FAILED_UPDATE, http.StatusInternalServerError)
 		return
@@ -73,17 +84,18 @@ func UpdateCompany(w http.ResponseWriter, r *http.Request) {
 
 func DeleteCompany(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len(PARSE_URL):]
-	company, err := mockCompany()
+	parsedID, err := uuid.FromString(id)
+	if err != nil {
+		utils.Logger.Error(parsedID)
+		handleErrorResponse(w, FAILED_GET, http.StatusBadRequest)
+		return
+	}
+	utils.Logger.Debug("Deleting company with id: ", parsedID)
+	err = repository.DeleteCompany(parsedID)
 	if err != nil {
 		handleErrorResponse(w, FAILED_DELETE, http.StatusInternalServerError)
 		return
 	}
-	if company == (Company{}) {
-		handleErrorResponse(w, FAILED_DELETE, http.StatusNotFound)
-		return
-	}
-	company.Description = id
-	company.ID = uuid.New()
 	handleSuccessFullResponse(w, nil)
 }
 

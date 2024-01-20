@@ -63,12 +63,14 @@ func TestCreateCompany(t *testing.T) {
 	// Arrange
 	mockDB := new(MockDB)
 	SetCompanyRepository(mockDB)
+	registered := true
+	cType := Cooperative
 	company := &Company{
 		Name:        "Test Company",
 		Description: "Test Description",
 		Employees:   400,
-		Registered:  true,
-		CompanyType: Cooperative,
+		Registered:  &registered,
+		CompanyType: &cType,
 	}
 	mockDB.On("Create", mock.Anything).Return(&gorm.DB{})
 
@@ -84,12 +86,14 @@ func TestUpdateCompany(t *testing.T) {
 	// Arrange
 	mockDB := new(MockDB)
 	SetCompanyRepository(mockDB)
+	registered := true
+	cType := Cooperative
 	company := &Company{
 		Name:        "Test Company",
 		Description: "Test Description",
 		Employees:   400,
-		Registered:  true,
-		CompanyType: Cooperative,
+		Registered:  &registered,
+		CompanyType: &cType,
 	}
 	mockDB.On("Save", mock.Anything).Return(&gorm.DB{})
 

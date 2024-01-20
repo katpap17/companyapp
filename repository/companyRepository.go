@@ -15,12 +15,12 @@ const (
 )
 
 type Company struct {
-	ID          uuid.UUID   `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Employees   int         `json:"employees"`
-	Registered  bool        `json:"registered"`
-	CompanyType companyType `json:"companyType"`
+	ID          uuid.UUID    `json:"id"`
+	Name        string       `json:"name" validate:"required"`
+	Description string       `json:"description"`
+	Employees   int          `json:"employees" validate:"required"`
+	Registered  *bool        `json:"registered" validate:"required"`
+	CompanyType *companyType `json:"companyType" validate:"required"`
 }
 
 func (Company) TableName() string {

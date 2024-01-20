@@ -1,16 +1,12 @@
 package restserver
 
 import (
-	"os"
-
 	"github.com/gorilla/mux"
+	"github.com/katpap17/companyapp/utils"
 )
 
 func StartServer() {
-	ipPort := os.Getenv(IP_PORT)
-	if ipPort == "" {
-		ipPort = ":8000"
-	}
+	ipPort := utils.GetEnv(IP_PORT, DEFAULT_IP_PORT)
 	router := mux.NewRouter()
 	srv := CompanyService{}
 	srv.handleRequests(router)
