@@ -16,3 +16,12 @@ func validateCompany(company repository.Company) bool {
 	}
 	return true
 }
+
+func validateUser(user repository.User) bool {
+	if user.Username == "" {
+		return false
+	} else if user.Password == "" {
+		return false
+	}
+	return true
+}

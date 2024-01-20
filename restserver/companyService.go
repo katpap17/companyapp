@@ -24,7 +24,8 @@ func (c *CompanyService) start(router *mux.Router, IPPort string) {
 
 func (c *CompanyService) handleRequests(router *mux.Router) {
 	router.HandleFunc(COMPANY_URL, GetCompany).Methods(http.MethodGet)
-	router.HandleFunc(COMPANIES_URL, CreateCompany).Methods(http.MethodPost)
-	router.HandleFunc(COMPANY_URL, UpdateCompany).Methods(http.MethodPatch)
-	router.HandleFunc(COMPANY_URL, DeleteCompany).Methods(http.MethodDelete)
+	router.HandleFunc(LOGIN_URL, Login).Methods(http.MethodPost)
+	router.HandleFunc(COMPANIES_URL, AuthMiddleware(CreateCompany)).Methods(http.MethodPost)
+	router.HandleFunc(COMPANY_URL, AuthMiddleware(UpdateCompany)).Methods(http.MethodPatch)
+	router.HandleFunc(COMPANY_URL, AuthMiddleware(DeleteCompany)).Methods(http.MethodDelete)
 }

@@ -4,38 +4,15 @@ import (
 	"testing"
 
 	"github.com/gofrs/uuid"
+	"github.com/katpap17/companyapp/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
-type MockDB struct {
-	mock.Mock
-}
-
-func (m *MockDB) Create(value interface{}) *gorm.DB {
-	args := m.Called(value)
-	return args.Get(0).(*gorm.DB)
-}
-
-func (m *MockDB) First(dest interface{}, conds ...interface{}) *gorm.DB {
-	args := m.Called(dest, conds)
-	return args.Get(0).(*gorm.DB)
-}
-
-func (m *MockDB) Save(value interface{}) *gorm.DB {
-	args := m.Called(value)
-	return args.Get(0).(*gorm.DB)
-}
-
-func (m *MockDB) Delete(value interface{}, conds ...interface{}) *gorm.DB {
-	args := m.Called(value, conds)
-	return args.Get(0).(*gorm.DB)
-}
-
 func TestGetCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	SetCompanyRepository(mockDB)
 
 	mockCompany := &Company{Description: "Description"}
@@ -61,7 +38,7 @@ func TestGetCompany(t *testing.T) {
 
 func TestCreateCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	SetCompanyRepository(mockDB)
 	registered := true
 	cType := Cooperative
@@ -84,7 +61,7 @@ func TestCreateCompany(t *testing.T) {
 
 func TestUpdateCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	SetCompanyRepository(mockDB)
 	registered := true
 	cType := Cooperative
@@ -107,7 +84,7 @@ func TestUpdateCompany(t *testing.T) {
 
 func TestDeleteCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	SetCompanyRepository(mockDB)
 	id, _ := uuid.NewV7()
 	mockDB.On("Delete", mock.Anything, mock.Anything).Return(&gorm.DB{})

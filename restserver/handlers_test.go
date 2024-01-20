@@ -8,39 +8,17 @@ import (
 	"testing"
 
 	"github.com/gofrs/uuid"
+	"github.com/katpap17/companyapp/auth"
 	"github.com/katpap17/companyapp/repository"
+	"github.com/katpap17/companyapp/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
-type MockDB struct {
-	mock.Mock
-}
-
-func (m *MockDB) Create(value interface{}) *gorm.DB {
-	args := m.Called(value)
-	return args.Get(0).(*gorm.DB)
-}
-
-func (m *MockDB) First(dest interface{}, conds ...interface{}) *gorm.DB {
-	args := m.Called(dest, conds)
-	return args.Get(0).(*gorm.DB)
-}
-
-func (m *MockDB) Save(value interface{}) *gorm.DB {
-	args := m.Called(value)
-	return args.Get(0).(*gorm.DB)
-}
-
-func (m *MockDB) Delete(value interface{}, conds ...interface{}) *gorm.DB {
-	args := m.Called(value, conds)
-	return args.Get(0).(*gorm.DB)
-}
-
 func TestGetCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	repository.SetCompanyRepository(mockDB)
 	id, _ := uuid.NewV7()
 	registered := false
@@ -67,7 +45,7 @@ func TestGetCompany(t *testing.T) {
 
 func TestCreateCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	repository.SetCompanyRepository(mockDB)
 	body := `{"name":"XM","description":"5","employees":100,"registered":false,"companyType":0}`
 	request, _ := http.NewRequest("POST", "/companies", bytes.NewBufferString(body))
@@ -83,7 +61,7 @@ func TestCreateCompany(t *testing.T) {
 
 func TestCreateCompany_FailValidation(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	repository.SetCompanyRepository(mockDB)
 	body := `{"name":"XM","description":"5","registered":false,"companyType":0}`
 	request, _ := http.NewRequest("POST", "/companies", bytes.NewBufferString(body))
@@ -99,7 +77,7 @@ func TestCreateCompany_FailValidation(t *testing.T) {
 
 func TestUpdateCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	repository.SetCompanyRepository(mockDB)
 	body := `{"name":"XM","description":"5","employees":100,"registered":false,"companyType":0}`
 	request, _ := http.NewRequest("PATCH", "/companies/a1f5e7ab-8b2a-4f48-bab5-9de29c2638a2", bytes.NewBufferString(body))
@@ -115,7 +93,7 @@ func TestUpdateCompany(t *testing.T) {
 
 func TestUpdateCompany_FailValidation(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	repository.SetCompanyRepository(mockDB)
 	body := `{"name":"XM","description":"5","employees":100,"companyType":0}`
 	request, _ := http.NewRequest("PATCH", "/companies/a1f5e7ab-8b2a-4f48-bab5-9de29c2638a2", bytes.NewBufferString(body))
@@ -131,7 +109,7 @@ func TestUpdateCompany_FailValidation(t *testing.T) {
 
 func TestDeleteCompany(t *testing.T) {
 	// Arrange
-	mockDB := new(MockDB)
+	mockDB := new(utils.MockDB)
 	repository.SetCompanyRepository(mockDB)
 	request, _ := http.NewRequest("DELETE", "/companies/a1f5e7ab-8b2a-4f48-bab5-9de29c2638a2", nil)
 	responseRecorder := httptest.NewRecorder()
@@ -139,6 +117,29 @@ func TestDeleteCompany(t *testing.T) {
 
 	// Act
 	DeleteCompany(responseRecorder, request)
+
+	// Assert
+	assert.Equal(t, 200, responseRecorder.Result().StatusCode)
+}
+
+func TestLogin(t *testing.T) {
+	// Arrange
+	responseRecorder := httptest.NewRecorder()
+	mockDB := new(utils.MockDB)
+	repository.SetUserRepository(mockDB)
+	mockUser := &repository.User{Username: "username", Password: "$2a$10$s.NE7lLIfw1qB6XKULPE9.Zi2k5Rt8wsY43cFyuYVBZXtuG6WWHXe"}
+	mockDB.On("First", mock.AnythingOfType("*repository.User"), mock.Anything).Run(
+		func(args mock.Arguments) {
+			userArg := args.Get(0).(*repository.User)
+			*userArg = *mockUser
+		},
+	).Return(&gorm.DB{})
+	request, _ := http.NewRequest("POST", "/login", bytes.NewBufferString(`{"username":"katerina","password":"12345"}`))
+	token, _ := auth.GenerateToken("username")
+	request.Header.Set("Authorization", "Bearer "+token)
+
+	// Act
+	Login(responseRecorder, request)
 
 	// Assert
 	assert.Equal(t, 200, responseRecorder.Result().StatusCode)

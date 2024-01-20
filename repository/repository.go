@@ -12,3 +12,8 @@ type DBHandler interface {
 type Repository struct {
 	db DBHandler
 }
+
+func SetDB(db DBHandler) {
+	SetCompanyRepository(db)
+	SetUserRepository(db)
+}

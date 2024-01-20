@@ -64,12 +64,6 @@ func (r *CompanyRepository) get(id uuid.UUID) (*Company, error) {
 }
 
 func (r *CompanyRepository) create(company *Company) error {
-	id, err := uuid.NewV7()
-	if err != nil {
-		utils.Logger.Error(err.Error())
-		return err
-	}
-	company.ID = id
 	result := r.Repository.db.Create(company)
 	if result.Error != nil {
 		utils.Logger.Error(result.Error.Error())
