@@ -59,12 +59,15 @@ make image
 
 Make sure to provide the following environment variables:
 
+- `IP_PORT`
 - `DB_HOST`
 - `DB_PORT`
 - `DB_USER`
 - `DB_PASSWORD`
 - `DB_NAME`
 - `JWT_KEY`
+- `LOGFILE`
+- `CONF_FILE_PATH`
 
 If you want to set up a default user in the database, also provide:
 
