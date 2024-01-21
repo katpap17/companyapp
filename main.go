@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/katpap17/companyapp/actions"
 	"github.com/katpap17/companyapp/database"
 	"github.com/katpap17/companyapp/repository"
@@ -15,9 +13,12 @@ const USER_PASS = "USER_PASS"
 
 func main() {
 	utils.SetUpLogging()
+	var err error
+	err = utils.LoadConfig()
+	if err != nil {
+		utils.Logger.Error("Error loading configuration:", err)
+	}
 
-	utils.Logger.Trace("Waiting for db")
-	time.Sleep(30 * time.Second)
 	utils.Logger.Trace("Setting up db")
 	db, err := database.Init()
 	if err != nil {

@@ -8,9 +8,10 @@ COPY . ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /company-app
 
-FROM gcr.io/distroless/base-debian11 AS build-release-stage
+FROM alpine:latest AS build-release-stage
 WORKDIR /
 COPY --from=build-stage /company-app /company-app
+COPY --from=build-stage /app/config.json /config.json
 EXPOSE 8000
 
 ENTRYPOINT ["/company-app"]

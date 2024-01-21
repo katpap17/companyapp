@@ -5,10 +5,10 @@ import (
 	"github.com/katpap17/companyapp/utils"
 )
 
-type companyType int
+type CompanyType int
 
 const (
-	Corporations companyType = iota
+	Corporations CompanyType = iota
 	NonProfit
 	Cooperative
 	SoleProprietorshipt
@@ -20,7 +20,7 @@ type Company struct {
 	Description string       `json:"description"`
 	Employees   int          `json:"employees" validate:"required"`
 	Registered  *bool        `json:"registered" validate:"required"`
-	CompanyType *companyType `json:"companyType" validate:"required"`
+	CompanyType *CompanyType `json:"companyType" validate:"required"`
 }
 
 func (Company) TableName() string {

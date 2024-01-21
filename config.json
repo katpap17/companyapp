@@ -1,0 +1,7 @@
+{
+    "server": {
+      "write_timeout": 400,
+      "read_timeout": 400,
+      "idle_timeout": 400
+    }
+  }

@@ -3,25 +3,33 @@ package restserver
 import "github.com/katpap17/companyapp/repository"
 
 func validateCompany(company repository.Company) bool {
-	if company.Name == "" || len(company.Name) > 15 {
-		return false
-	} else if len(company.Description) > 3000 {
-		return false
-	} else if company.Employees == 0 {
-		return false
-	} else if company.Registered == nil {
-		return false
-	} else if company.CompanyType == nil {
-		return false
-	}
-	return true
+	return validateCompanyName(company.Name) &&
+		validateCompanyDescription(company.Description) &&
+		validateCompanyEmployees(company.Employees) &&
+		validateCompanyRegistered(company.Registered) &&
+		validateCompanyType(company.CompanyType)
+}
+
+func validateCompanyName(name string) bool {
+	return name != "" && len(name) <= 15
+}
+
+func validateCompanyDescription(description string) bool {
+	return len(description) <= 3000
+}
+
+func validateCompanyEmployees(employees int) bool {
+	return employees > 0
+}
+
+func validateCompanyRegistered(registered *bool) bool {
+	return registered != nil
+}
+
+func validateCompanyType(companyType *repository.CompanyType) bool {
+	return companyType != nil
 }
 
 func validateUser(user repository.User) bool {
-	if user.Username == "" {
-		return false
-	} else if user.Password == "" {
-		return false
-	}
-	return true
+	return user.Username != "" && user.Password != ""
 }

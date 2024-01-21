@@ -12,7 +12,7 @@ This microservice handles company operations through a REST API, providing funct
 1. Use the following command to run the app locally:
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
 2. A test user is created by default. Use the following commands to test:
@@ -70,3 +70,5 @@ If you want to set up a default user in the database, also provide:
 
 - `DEFAULT_USER`
 - `USER_PASS`
+
+A configuration file with parameters for the http server is also provided.

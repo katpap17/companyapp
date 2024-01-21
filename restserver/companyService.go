@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/katpap17/companyapp/utils"
 )
 
 type CompanyService struct {
@@ -14,9 +15,9 @@ type CompanyService struct {
 func (c *CompanyService) start(router *mux.Router, IPPort string) {
 	c.srv = &http.Server{
 		Addr:         IPPort,
-		WriteTimeout: time.Second * 300,
-		ReadTimeout:  time.Second * 300,
-		IdleTimeout:  time.Second * 300,
+		WriteTimeout: time.Second * time.Duration(utils.Cfg.Server.WriteTimeout),
+		ReadTimeout:  time.Second * time.Duration(utils.Cfg.Server.ReadTimeout),
+		IdleTimeout:  time.Second * time.Duration(utils.Cfg.Server.IdleTimeout),
 		Handler:      router,
 	}
 	c.srv.ListenAndServe()
