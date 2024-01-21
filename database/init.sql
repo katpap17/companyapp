@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS company (
+id UUID PRIMARY KEY,
+name VARCHAR(255) NOT NULL UNIQUE,
+description TEXT,
+employees INT NOT NULL,
+registered BOOLEAN NOT NULL,
+company_type INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_table (
+username VARCHAR(255) PRIMARY KEY,
+
+password VARCHAR(255) NOT NULL
+);
